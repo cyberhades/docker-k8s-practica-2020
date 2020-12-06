@@ -55,7 +55,11 @@ Si lo prefieres, puedes usar otro cluster o CNI plugin.
 
 Cuando desplegamos un contenedor en Kubernetes, minikube en este caso, éste se va buscar la imagen a un repositorio de imágenes, hub.docker.com por defecto, a menos que le indiquemos otro, o que la imagen ya se encuentre en la caché del cluster y no le hayamos dicho a Kubernetes que ignore la cache.
 
-Para hacer la práctica, puedes crear tu imagen y subirla al registro de docker o simplemente puedes usar el contexto de minikube cuando crees (docker build...) la imagen. De esta forma la imagen se cargaría dentro de la caché de minikube. Si haces el cambio de contexto, asegúrate también de añadir a tu fichero de despliegue el siguiente atributo:
+Para hacer la práctica, puedes crear tu imagen y subirla al registro de docker o simplemente puedes usar el contexto de minikube cuando crees (docker build...) la imagen. De esta forma la imagen se cargaría dentro de la caché de minikube:
+
+    eval $(minikube -p minikube docker-env)
+
+Si haces el cambio de contexto, asegúrate también de añadir a tu fichero de despliegue el siguiente atributo:
 
     imagePullPolicy: Never
 
