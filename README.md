@@ -9,13 +9,13 @@ Además de la aplicación, se adjuntan varios ficheros más, entre ellos un fich
 Se piden varias cosas:
 
 
-###1. Modificación del fichero Dockerfile
+### 1. Modificación del fichero Dockerfile
 
 El fichero Dockerfile adjunto crea una imagen con muchas cosas que la aplicación no necesita en ejecución. Por lo tanto se pide que se actualice dicho fichero en un fichero multifase, cuya imagen final esté basada en: gcr.io/distroless/base
 
 Además de eso, se pide que la aplicación se ejecute con un usuario llamado `app` cuyo id sea 1000.
 
-###2. Terminar el fichero docker-compose.yaml
+### 2. Terminar el fichero docker-compose.yaml
 
 Como también se puede observar, en el repositorio existe un fichero docker-compose.yaml incompleto con dos servicios definidos: web y redis.
 
@@ -23,7 +23,7 @@ Se pide que ambos servicios, web y redis, se ejecuten en una red llamada `backen
 
 El servicio `web` se conecta a la base de datos (redis) especificadad a través de la variable de entorno: REDIS_SERVER.
 
-###3. Crear los ficheros **manifesto** de Kubernetes para el servicio web.
+### 3. Crear los ficheros **manifesto** de Kubernetes para el servicio web.
 
 En el repositorio también tenéis los ficheros para la creación del despliegue y el servicio para la base de datos Redis.
 
@@ -51,7 +51,7 @@ Para más información con respecto cilium en minikube: https://docs.cilium.io/e
 
 Si lo prefieres, puedes usar otro cluster o CNI plugin.
 
-####Fortificando el contenedor en Kubernetes
+#### Fortificando el contenedor en Kubernetes
 
 Si quieres sacar puntuación extra, se pide que se fortifique el contenedor de la aplicación (no de Redis) de la siguiente manera:
 
