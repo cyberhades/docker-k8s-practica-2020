@@ -51,6 +51,16 @@ Para más información con respecto cilium en minikube: https://docs.cilium.io/e
 
 Si lo prefieres, puedes usar otro cluster o CNI plugin.
 
+#### Carga de imágenes en minikube
+
+Cuando desplegamos un contenedor en Kubernetes, minikube en este caso, éste se va buscar la imagen a un repositorio de imágenes, hub.docker.com por defecto, a menos que le indiquemos otro, o que la imagen ya se encuentre en la caché del cluster y no le hayamos dicho a Kubernetes que ignore la cache.
+
+Para hacer la práctica, puedes crear tu imagen y subirla al registro de docker o simplemente puedes usar el contexto de minikube cuando crees (docker build...) la imagen. De esta forma la imagen se cargaría dentro de la caché de minikube. Si haces el cambio de contexto, asegúrate también de añadir a tu fichero de despliegue el siguiente atributo:
+
+    imagePullPolicy: Never
+
+Para que Kubernetes no vaya al registro a buscar la imagen para comprobar si existe una más nueva.
+
 #### Fortificando el contenedor en Kubernetes
 
 Si quieres sacar puntuación extra, se pide que se fortifique el contenedor de la aplicación (no de Redis) de la siguiente manera:
@@ -63,7 +73,7 @@ Si quieres sacar puntuación extra, se pide que se fortifique el contenedor de l
 
 ## Puntuación de la práctica
 
-- Creación del Dockerfile multifase - 2 puntos
+- Creación del Dockerfile multifase como se pide en el enunciado - 2 puntos
 - Creación correcta del fihero docker-compose - 2 puntos
 - Creación del fichero de despliegue y servicio de la aplicación - 2 puntos
 - Creación de las políticas de red - 2 puntos
