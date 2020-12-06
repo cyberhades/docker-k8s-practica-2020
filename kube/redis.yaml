@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - image: redis:6
+          imagePullPolicy: IfNotPresent
+          name: redis
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+          ports:
+            - containerPort: 6379
+              name: redis
+
+
