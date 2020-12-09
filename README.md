@@ -61,7 +61,15 @@ Para probar que sólo la aplicación tiene acceso a la base de datos, podéis ar
 
     kubectl run -it rediscli --image redis --restart Never -- bash
 
-Una vez tengáis la shell, podéis consiltar el valor del contador:
+Una vez tengáis la shell, podéis conectaros:
+
+    redis-cli -h redis
+
+Si desplegáis este POD en un espacio de nombres distinto al de Redis, tenéis que conectaros usando redis.NOMBRE_ESPACIO, si Redis está desplegado en `default`:
+
+    redis-cli -h redis.default
+
+Si la conexión fue satisfactoria, podéis consultar el valor del contador:
 
     hget visits count
 
