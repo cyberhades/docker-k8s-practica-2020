@@ -9,32 +9,32 @@ Además de la aplicación, se adjuntan varios ficheros más, entre ellos un fich
 Se piden varias cosas:
 
 
-### 1. Modificación del fichero Dockerfile
+#### 1. Modificación del fichero Dockerfile
 
-El fichero Dockerfile adjunto crea una imagen con muchas cosas que la aplicación no necesita en ejecución. Por lo tanto se pide que se actualice dicho fichero en un fichero multifase, cuya imagen final esté basada en: gcr.io/distroless/base
+El fichero Dockerfile adjunto crea una imagen con muchas cosas (herramientas, librerías, etc) que la aplicación no necesita en ejecución. Por lo tanto se pide que se actualice dicho fichero (o se cree un fichero nuevo) usando la multifase, cuya imagen final esté basada en: **gcr.io/distroless/base**
 
-Además de eso, se pide que la aplicación se ejecute con un usuario llamado `app` cuyo id sea 1000.
+Además de eso, se pide que la aplicación se ejecute con un usuario llamado `app` sin privilegios de root.
 
-### 2. Terminar el fichero docker-compose.yaml
+#### 2. Terminar el fichero docker-compose.yaml
 
-Como también se puede observar, en el repositorio existe un fichero docker-compose.yaml incompleto con dos servicios definidos: web y redis.
+Como también se puede observar que en el repositorio existe un fichero docker-compose.yaml incompleto con dos servicios definidos: web y redis.
 
-Se pide que ambos servicios, web y redis, se ejecuten en una red llamada `backend`, y que el servicio `redis` se arranque antes que `web`.
+Se pide que se complete dicho fichero, que ambos servicios, web y redis, se ejecuten en una red llamada `backend`, y que el servicio `redis` se arranque antes que `web`.
 
-El servicio `web` se conecta a la base de datos (redis) especificadad a través de la variable de entorno: REDIS_SERVER.
+El servicio `web` se conecta a la base de datos (redis) especificada a través de la variable de entorno: REDIS_SERVER.
 
-### 3. Crear los ficheros **manifesto** de Kubernetes para el servicio web.
+#### 3. Crear los ficheros **manifesto** de Kubernetes para el servicio web.
 
-En el repositorio también tenéis los ficheros para la creación del despliegue y el servicio para la base de datos Redis.
+En el repositorio también tenéis los ficheros para la creación del despliegue y el servicio para la base de datos Redis en Kubernetes.
 
-En esta parte de la práctica se pide la creación del despliegue con una copia (replica) del mismo, así como un servicio para exponer la aplicación y poder acceder desde afuera del clúster.
+En esta parte de la práctica se pide la creación del despliegue con una copia (replica) del mismo, así como un servicio para exponer la aplicación y poder acceder a ésta desde afuera del clúster.
 
-En este punto habréis podido comprobar que la base de datos no tiene habilitada ningún tipo de autenticación, por lo que cualquier pod del cluster podría conectarse a la base de datos y borrar o modificar el contador de visitas.
-Por ello se pide que para evitar eso, se proteja la base de datos con políticas de red. De hecho se pide que se deniegue todo el tráfico del espacio de nombres y que luego se creen las políticas para abrir las conexiones necesarias.
+En este punto habréis podido comprobar que la base de datos no tiene habilitada ningún tipo de autenticación, por lo que cualquier POD del cluster podría conectarse a la base de datos y borrar o modificar el contador de visitas.
+Por ello se pide que para evitar eso, se proteja la base de datos con políticas de red. De hecho se pide que se deniegue todo el tráfico dentro del espacio de nombres `default` y que luego se creen las políticas para definir las conexiones necesarias para permitir el funcionamiento correcto de la aplicación.
 
-## Notas
+### Notas
 
-Para llevar a cabo esta práctica sobre todo la parte de políticas de red de Kubernetes, necesitas que tu cluster soporta las mismas. 
+Para llevar a cabo esta práctica sobre todo la parte de políticas de red de Kubernetes, necesitas que tu cluster soporte las mismas. 
 Si usas `minikube >= v1.12.1`, debes de arrancarlo de la siguiente manera:
 
     minikube start --cni=cilium --memory=4096
@@ -51,19 +51,25 @@ Para más información con respecto cilium en minikube: https://docs.cilium.io/e
 
 Si lo prefieres, puedes usar otro cluster o CNI plugin.
 
-#### Carga de imágenes en minikube
+Para comprobar si las políticas de red funcionan, tenéis que aseguraros que la aplicación aún funciona bien. Para ello podéis acceder a la aplicación con el siguiente comando:
 
-Cuando desplegamos un contenedor en Kubernetes, minikube en este caso, éste se va buscar la imagen a un repositorio de imágenes, hub.docker.com por defecto, a menos que le indiquemos otro, o que la imagen ya se encuentre en la caché del cluster y no le hayamos dicho a Kubernetes que ignore la cache.
+    minikube service NOMBRE_SERVICIO
 
-Para hacer la práctica, puedes crear tu imagen y subirla al registro de docker o simplemente puedes usar el contexto de minikube cuando crees (docker build...) la imagen. De esta forma la imagen se cargaría dentro de la caché de minikube:
+Eso debería de abrir la aplicación en el navegador y deberías de ver el contador. Haciendo un refresco de página dicho contador debería de incrementar.
 
-    eval $(minikube -p minikube docker-env)
+Para probar que sólo la aplicación tiene acceso a la base de datos, podéis arrancar un POD nuevo con `redis-cli` para conectaros a la base de datos:
 
-Si haces el cambio de contexto, asegúrate también de añadir a tu fichero de despliegue el siguiente atributo:
+    kubectl run -it rediscli --image redis --restart Never -- bash
 
-    imagePullPolicy: Never
+Una vez tengáis la shell, podéis consiltar el valor del contador:
 
-Para que Kubernetes no vaya al registro a buscar la imagen para comprobar si existe una más nueva.
+    hget visits count
+
+E incluso modificar dicho valor:
+
+    hset visits count -5
+
+Si las políticas de red están bien aplicadas, la aplicación debería de funcionar, pero la conexión desde el segundo POD con `redis-cli` no debería de poder conectar con la base de datos.
 
 #### Fortificando el contenedor en Kubernetes
 
@@ -77,7 +83,7 @@ Si quieres sacar puntuación extra, se pide que se fortifique el contenedor de l
 
 ## Puntuación de la práctica
 
-- Creación del Dockerfile multifase como se pide en el enunciado - 2 puntos
+- Creación del Dockerfile multifase - 2 puntos
 - Creación correcta del fihero docker-compose - 2 puntos
 - Creación del fichero de despliegue y servicio de la aplicación - 2 puntos
 - Creación de las políticas de red - 2 puntos
